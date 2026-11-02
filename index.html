@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Showroom virtual</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8F%A0%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--glass:rgba(239,236,230,.88);--ink:#1d1e1f;--muted:#5d5f5e;--oak:#c8893f;--line:rgba(29,30,31,.14);--bg:#d9d6d0;--side:#efece6;--sw:230px;font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--glass:rgba(29,30,31,.84);--ink:#efece6;--muted:#b4b3ae;--line:rgba(239,236,230,.18);--bg:#1d1e1f;--side:#26272a}}
+:root[data-theme="dark"]{--glass:rgba(29,30,31,.84);--ink:#efece6;--muted:#b4b3ae;--line:rgba(239,236,230,.18);--bg:#1d1e1f;--side:#26272a}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);overflow:hidden}
+#show{position:fixed;inset:0;background:#111}
+.stage{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;scrollbar-width:none}
+.stage::-webkit-scrollbar{display:none}
+.bgfill{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(28px) brightness(.85)}
+.frame{position:relative;width:min(100vw,calc(100dvh*1.2517));aspect-ratio:2576/2058;transition:opacity .25s}
+.frame.fade{opacity:0}
+.frame img{display:block;width:100%;height:100%}
+@media (orientation:portrait){.stage{display:block;overflow-x:auto;overflow-y:hidden}.bgfill{display:none}.frame{width:calc(100dvh*1.2517);height:100dvh}}
+.floors{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:calc(14px + env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:8px}
+.fb{all:unset;cursor:pointer;display:block;padding:10px 16px;border-radius:999px;border:2px solid transparent;font-size:14px;font-weight:600;color:var(--ink);background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.fb:hover{border-color:rgba(200,137,63,.6)}
+.fb[aria-current="true"]{border-color:var(--oak)}
+.fb:focus-visible,.rd:focus-visible,.back:focus-visible,.dock button:focus-visible,.hs:focus-visible,.tg:focus-visible,.pd:focus-visible{outline:3px solid var(--oak);outline-offset:2px}
+.cap{position:fixed;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));max-width:min(340px,calc(100vw - 28px));background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:14px;padding:12px 14px;line-height:1.35;color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.cap h1{margin:0;font-size:18px;font-weight:600}
+.cap p{margin:5px 0 0;font-size:13px}
+.cap em{display:block;margin-top:7px;font-size:12px;font-style:normal;color:var(--muted)}
+.rd{all:unset;cursor:pointer;display:block;position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(215,215,212,.34);border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 14px rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.rd:hover{background:rgba(215,215,212,.55)}
+.rd b{position:absolute;top:46px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(29,30,31,.84);color:#fff;font:600 12px/1 "Bricolage Grotesque",system-ui,sans-serif;padding:6px 10px;border-radius:999px;pointer-events:none}
+@media (max-width:760px){.floors{flex-direction:row;right:10px;overflow-x:auto;gap:6px;scrollbar-width:none}.fb{white-space:nowrap;padding:9px 13px;font-size:13px}.cap{padding:9px 11px}.cap h1{font-size:15px}.cap p{font-size:12px}.cap em{display:none}}
+#intro{position:fixed;inset:0;background:#111;display:none}
+.ly{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+#i2,#ivid{transition:opacity .5s}
+.shade{opacity:0;pointer-events:none}
+.shade.on{animation:blink 3.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:0}50%{opacity:.95}}
+@media (prefers-reduced-motion:reduce){.shade.on{animation:none;opacity:.55}}
+.go{all:unset;cursor:pointer;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(29,30,31,.74);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;border:2px solid rgba(255,255,255,.9);border-radius:999px;padding:15px 28px;font:600 17px/1 "Bricolage Grotesque",system-ui,sans-serif;box-shadow:0 4px 24px rgba(0,0,0,.35);transition:opacity .35s;white-space:nowrap;z-index:3}
+.go:hover{background:rgba(29,30,31,.88)}
+.go.off{opacity:0;pointer-events:none}
+.go:focus-visible{outline:3px solid var(--oak);outline-offset:3px}
+#ihot{left:49.9%;top:50.5%;width:34px;height:34px;margin:-17px 0 0 -17px;z-index:3}
+#ihot[hidden]{display:none}
+#ihot b{top:40px}
+#ext{position:fixed;inset:0;background:#111}
+.arr{all:unset;cursor:pointer;position:fixed;top:50%;transform:translateY(-50%);width:54px;height:54px;border-radius:50%;background:rgba(215,215,212,.34);border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 14px rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;z-index:2}
+.arr[hidden]{display:none}
+.arr:hover{background:rgba(215,215,212,.55)}
+.arr:focus-visible,.seg button:focus-visible,.dots button:focus-visible{outline:3px solid var(--oak);outline-offset:2px}
+.arr.l{left:calc(14px + env(safe-area-inset-left,0px))}
+.arr.r{right:calc(14px + env(safe-area-inset-right,0px))}
+.arr svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.arr b{position:absolute;top:60px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(29,30,31,.84);color:#fff;font:600 12px/1 "Bricolage Grotesque",system-ui,sans-serif;padding:6px 10px;border-radius:999px;pointer-events:none}
+.seg{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));display:flex;background:rgba(29,30,31,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:999px;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,.25);z-index:2}
+.seg[hidden]{display:none}
+.seg button{all:unset;cursor:pointer;display:grid;place-items:center;padding:7px 14px;border-radius:999px;color:#fff;opacity:.75}.seg button[aria-pressed="true"]{opacity:1}.seg svg{display:block;width:20px;height:20px}
+.seg button[aria-pressed="true"]{background:var(--oak);color:#fff}
+.cap small{display:block;font-size:12px;color:var(--muted)}
+.dots{display:flex;gap:10px;margin-top:10px}
+.dots button{all:unset;cursor:pointer;position:relative;width:10px;height:10px;border-radius:50%;background:rgba(128,128,128,.55)}
+.dots button::after{content:"";position:absolute;inset:-7px}
+.dots button[aria-current="true"]{background:var(--oak)}
+@media (max-width:760px){#ext .seg{top:calc(62px + env(safe-area-inset-top,0px));right:10px}.arr{width:46px;height:46px}.arr b{top:52px}}
+#tour{position:fixed;inset:0;display:none}
+#pano{position:absolute;inset:0;touch-action:none}
+.title{position:fixed;top:0;left:0;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;pointer-events:none;max-width:70%}
+.back{all:unset;cursor:pointer;pointer-events:auto;display:inline-block;background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--ink);font-size:13px;font-weight:600;padding:8px 13px;border-radius:999px;margin-bottom:8px}
+.title small{display:block;font-size:13px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.55)}
+.title h1{margin:2px 0 0;font-size:clamp(20px,4vw,30px);font-weight:600;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.6)}
+.hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(128px + env(safe-area-inset-bottom,0px));background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:999px;padding:7px 14px;font-size:13px;color:var(--ink);pointer-events:none;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis;transition:opacity .4s}
+.hint.off{opacity:0}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:0;padding:0 8px calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;max-width:100vw;overflow-x:auto}
+.dock button{all:unset;cursor:pointer;flex:0 0 auto;width:108px;background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:10px;padding:5px;border:2px solid transparent;color:var(--ink);font-size:12px;line-height:1.25}
+.dock button img{display:block;width:100%;aspect-ratio:10/7;object-fit:cover;border-radius:6px}
+.dock button span{display:block;padding:5px 2px 1px;text-align:left}
+.dock button[aria-current="true"]{border-color:var(--oak)}
+.plan{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;width:clamp(170px,32vw,360px);background:rgba(208,208,205,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:12px;padding:8px}
+.plan.off .map{display:none}
+.plan .tg{all:unset;cursor:pointer;display:block;width:100%;color:#1d1e1f;font-size:12px;font-weight:600;padding:2px 4px 6px}
+.plan.off .tg{padding-bottom:2px}
+.map{position:relative;width:100%}
+.map img{display:block;width:100%;height:auto}
+.pd{all:unset;display:none;position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#e5322d;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.5)}
+.pd[aria-current="true"]{display:block;width:20px;height:20px;margin:-10px 0 0 -10px;box-shadow:0 0 0 5px rgba(229,50,45,.38)}
+.hs{all:unset;cursor:pointer;position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(215,215,212,.34);border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 14px rgba(0,0,0,.3);pointer-events:auto;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hs:hover{background:rgba(215,215,212,.55)}
+.hs b{position:absolute;top:52px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(29,30,31,.78);color:#fff;font:600 12px/1 "Bricolage Grotesque",system-ui,sans-serif;padding:6px 10px;border-radius:999px;pointer-events:none}
+.err{position:fixed;inset:0;display:none;place-items:center;padding:24px;text-align:center;background:var(--bg)}
+</style>
+</head>
+<body>
+<div id="intro">
+  <div class="stage" id="istage"><div class="bgfill" id="ibg"></div><div class="frame" id="iframe">
+    <img class="ly" id="i1" alt="Vista aérea de la ciudad">
+    <img class="ly" id="i2" alt="" style="opacity:0">
+    <img class="ly shade" id="i3" alt="">
+    <video class="ly" id="ivid" muted playsinline preload="auto" style="opacity:0" aria-hidden="true"></video>
+    <button class="go" id="igo" type="button">Ingresar al showroom</button>
+    <button class="rd" id="ihot" type="button" aria-label="Entrar a las vistas aéreas" hidden><b>Vistas aéreas</b></button>
+  </div></div>
+</div>
+<div id="ext">
+  <div class="stage" id="estage"><div class="bgfill" id="ebg"></div><div class="frame fade" id="eframe"><img id="eimg" alt=""></div></div>
+  <nav class="floors" id="ebar" aria-label="Opciones"></nav>
+  <div class="seg" id="eseg" role="group" aria-label="Momento del día" hidden><button type="button" data-m="day" aria-label="Día" title="Día"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="#fff"/><path d="M12 1.8v2.6M12 19.6v2.6M1.8 12h2.6M19.6 12h2.6M17.4 6.6l1.8-1.8M6.6 6.6L4.8 4.8M17.4 17.4l1.8 1.8M6.6 17.4l-1.8 1.8" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/></svg></button><button type="button" data-m="night" aria-label="Noche" title="Noche"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#fff"/></svg></button></div>
+  <button class="arr l" id="eprev" type="button"></button>
+  <button class="arr r" id="enext" type="button"></button>
+  <div class="cap" id="ecap"></div>
+</div>
+<div id="show" style="display:none">
+  <div class="stage" id="stage"><div class="bgfill" id="bgfill"></div><div class="frame" id="frame"><img id="rimg" alt=""></div></div>
+  <nav class="floors" id="side" aria-label="Plantas"></nav>
+  <div class="cap" id="cap"></div>
+</div>
+<div id="tour">
+  <div id="pano"></div>
+  <div class="title"><button class="back" id="back" type="button">← Volver a la planta</button><small id="tfloor"></small><h1 id="name"></h1></div>
+  <aside class="plan" id="plan"><button class="tg" id="tg" type="button" aria-expanded="true">Plano</button><div class="map" id="map"><img id="pimg" alt="Plano de la planta"></div></aside>
+  <div class="hint" id="hint">Arrastrá para mirar alrededor y tocá los círculos para pasar de ambiente</div>
+  <nav class="dock" id="dock" aria-label="Ambientes"></nav>
+</div>
+<div class="err" id="err">Tu navegador no pudo iniciar la vista 360. Probá con Chrome, Safari o Edge actualizados.</div>
+<script src="https://cdn.jsdelivr.net/npm/marzipano@0.10.2/dist/marzipano.js"></script>
+<script>
+var DATA={"floors": [{"id": "pb", "name": "Planta baja", "render": "pb", "tour": "pb", "desc": "Estar-comedor-cocina integrado, dos baños, un dormitorio y un patio interno.", "dots": [{"s": "ecc", "x": 46.38, "y": 59.81}, {"s": "d", "x": 78.85, "y": 40.65}, {"s": "b", "x": 92.3, "y": 41.81}, {"s": "p", "x": 85.81, "y": 62.14}]}, {"id": "p1", "name": "Piso 1", "render": "p1", "tour": "p1", "desc": "Estar-comedor-cocina integrado, un baño, un dormitorio y una terraza.", "dots": [{"s": "ecc", "x": 44.06, "y": 59.23}, {"s": "d", "x": 64.94, "y": 40.65}, {"s": "b", "x": 66.79, "y": 65.04}, {"s": "t", "x": 84.88, "y": 40.07}]}, {"id": "p2", "name": "Piso 2", "render": "p2", "tour": "p2", "desc": "Estar-comedor-cocina integrado, un baño, un dormitorio y un balcón.", "dots": [{"s": "ecc", "x": 44.06, "y": 59.23}, {"s": "d", "x": 64.94, "y": 40.65}, {"s": "b", "x": 66.79, "y": 65.04}]}, {"id": "techo", "name": "Planta techo", "render": "techo", "tour": null, "desc": "", "dots": []}], "tours": {"pb": {"title": "Planta baja", "plan": "pb", "pos": {"d": [72.41, 21.84], "b": [89.31, 41.11], "ecc": [38.34, 57.83], "p": [81.87, 75.0]}, "scenes": [{"id": "ecc", "name": "Estar, comedor y cocina", "img": "pb_ecc", "yaw": 0, "links": [{"to": "p", "yaw": 8, "arrive": -2}, {"to": "d", "yaw": -39, "arrive": -127}]}, {"id": "d", "name": "Dormitorio", "img": "pb_d", "yaw": 0, "links": [{"to": "p", "yaw": 0, "arrive": 180}, {"to": "b", "yaw": -38, "arrive": 142}, {"to": "ecc", "yaw": 53, "arrive": 141}]}, {"id": "b", "name": "Baño", "img": "pb_b", "yaw": 55, "links": [{"to": "d", "yaw": -125, "arrive": 142}]}, {"id": "p", "name": "Patio", "img": "pb_p", "yaw": 0, "links": [{"to": "ecc", "yaw": 178, "arrive": 180}, {"to": "d", "yaw": -93, "arrive": 180}]}]}, "p1": {"title": "Piso 1", "plan": "p1", "pos": {"t": [85.44, 28.24], "d": [53.67, 35.65], "ecc": [28.76, 71.76], "b": [55.35, 77.78]}, "scenes": [{"id": "ecc", "name": "Estar, comedor y cocina", "img": "y_ecc", "yaw": 0, "links": [{"to": "d", "yaw": 178, "arrive": -79, "pitch": 0.04}, {"to": "b", "yaw": -164, "arrive": 16, "pitch": 0.04}]}, {"id": "d", "name": "Dormitorio", "img": "p1_d", "yaw": 0, "links": [{"to": "t", "yaw": 0, "arrive": -3}, {"to": "ecc", "yaw": 96, "arrive": -2, "pitch": 0.04}, {"to": "b", "yaw": 108, "arrive": 12, "pitch": 0.3}]}, {"id": "b", "name": "Baño", "img": "y_b", "yaw": 0, "links": [{"to": "d", "yaw": -168, "arrive": -79, "pitch": 0.04}, {"to": "ecc", "yaw": 168, "arrive": 8, "pitch": 0.04}]}, {"id": "t", "name": "Terraza", "img": "p1_t", "yaw": 0, "links": [{"to": "d", "yaw": 177, "arrive": 180}]}]}, "p2": {"title": "Piso 2", "plan": "p2", "pos": {"d": [65.22, 35.8], "ecc": [35.01, 71.79], "b": [67.28, 77.79]}, "scenes": [{"id": "ecc", "name": "Estar, comedor y cocina", "img": "y_ecc", "yaw": 0, "links": [{"to": "d", "yaw": 178, "arrive": -79, "pitch": 0.04}, {"to": "b", "yaw": -164, "arrive": 16, "pitch": 0.04}]}, {"id": "d", "name": "Dormitorio", "img": "p2_d", "yaw": 0, "links": [{"to": "ecc", "yaw": 96, "arrive": -2, "pitch": 0.04}, {"to": "b", "yaw": 108, "arrive": 12, "pitch": 0.3}]}, {"id": "b", "name": "Baño", "img": "y_b", "yaw": 0, "links": [{"to": "d", "yaw": -168, "arrive": -79, "pitch": 0.04}, {"to": "ecc", "yaw": 168, "arrive": 8, "pitch": 0.04}]}]}}, "ext": {"obsStart": 1, "aereas": [{"name": "Frente derecha", "day": "assets/3_RENDER_AEREO_Frente_derecha_dia.jpg", "night": "assets/4_RENDER_AEREO_Frente_derecha_noche.jpg"}, {"name": "Frente izquierda", "day": "assets/5_RENDER_AEREO_Frente_izquierda.jpg"}, {"name": "Contrafrente", "day": "assets/6_RENDER_AEREO_Contrafrente.jpg"}], "obs": [{"name": "Izquierda", "day": "assets/RENDER_frente_izq_dia.jpg", "night": "assets/RENDER_frente_izq_noche.jpg"}, {"name": "Frente", "day": "assets/RENDER_frente.jpg"}, {"name": "Derecha", "day": "assets/RENDER_frente_derecha.jpg"}]}};
+var IMGS={"pb_ecc": "assets/360_pb_ecc.jpg", "pb_d": "assets/360_pb_d.jpg", "pb_b": "assets/360_pb_b.jpg", "pb_p": "assets/360_pb_p.jpg", "p1_d": "assets/360_p1_d.jpg", "p1_t": "assets/360_p1_t.jpg", "y_ecc": "assets/360_y_ecc.jpg", "y_b": "assets/360_y_b.jpg", "p2_d": "assets/360_p2_d.jpg"};
+var THUMBS={"pb_ecc": "assets/miniatura_pb_ecc.jpg", "pb_d": "assets/miniatura_pb_d.jpg", "pb_b": "assets/miniatura_pb_b.jpg", "pb_p": "assets/miniatura_pb_p.jpg", "p1_ecc": "assets/miniatura_p1_ecc.jpg", "p1_d": "assets/miniatura_p1_d.jpg", "p1_b": "assets/miniatura_p1_b.jpg", "p1_t": "assets/miniatura_p1_t.jpg", "p2_ecc": "assets/miniatura_p2_ecc.jpg", "p2_d": "assets/miniatura_p2_d.jpg", "p2_b": "assets/miniatura_p2_b.jpg"};
+var PLANS={"pb": "assets/plano_pb.png", "p1": "assets/plano_p1.png", "p2": "assets/plano_p2.png"};
+var RENDERS={"pb": "assets/render_pb.jpg", "p1": "assets/render_p1.jpg", "p2": "assets/render_p2.jpg", "techo": "assets/render_techo.jpg"};
+(function(){
+var $=function(i){return document.getElementById(i)};
+var rad=function(d){return d*Math.PI/180};
+var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+var floors=DATA.floors,tours=DATA.tours,byF={};
+var side=$("side"),stage=$("stage"),frame=$("frame"),rimg=$("rimg"),cap=$("cap"),show=$("show"),tourEl=$("tour");
+var dock=$("dock"),mapEl=$("map"),planEl=$("plan"),tg=$("tg"),nameEl=$("name"),hint=$("hint");
+var viewer,limiter,geom,curF=null,curT=null,byS={};
+
+/* ---------- render de plantas ---------- */
+function selFloor(id,instant){
+  var f=byF[id];curF=id;
+  Array.prototype.forEach.call(side.querySelectorAll(".fb"),function(b){b.setAttribute("aria-current",b.dataset.id===id?"true":"false")});
+  function paint(){
+    rimg.src=RENDERS[f.render];rimg.alt="Render de "+f.name;$("bgfill").style.backgroundImage='url("'+RENDERS[f.render]+'")';
+    Array.prototype.forEach.call(frame.querySelectorAll(".rd"),function(n){n.remove()});
+    var t=f.tour?tours[f.tour]:null;
+    (f.dots||[]).forEach(function(d){
+      var s=t.scenes.filter(function(x){return x.id===d.s})[0];
+      var b=document.createElement("button");b.type="button";b.className="rd";
+      b.style.left=d.x+"%";b.style.top=d.y+"%";
+      b.setAttribute("aria-label","Abrir recorrido 360: "+s.name);
+      b.innerHTML="<b>"+s.name+"</b>";
+      b.addEventListener("click",function(){openTour(f.tour,d.s)});
+      frame.appendChild(b);
+    });
+    cap.innerHTML="<h1>"+f.name+"</h1>"+(f.desc?"<p>"+f.desc+"</p>":"")+(f.dots&&f.dots.length?"<em>Tocá un círculo rojo para entrar al recorrido 360</em>":"");
+    frame.classList.remove("fade");
+    if(window.matchMedia("(orientation:portrait)").matches){stage.scrollLeft=frame.offsetWidth*0.62-stage.clientWidth/2}
+  }
+  if(instant||reduce){paint()}else{frame.classList.add("fade");setTimeout(paint,220)}
+}
+floors.forEach(function(f){
+  byF[f.id]=f;
+  var b=document.createElement("button");b.type="button";b.className="fb";b.dataset.id=f.id;b.textContent=f.name;
+  b.addEventListener("click",function(){if(curF!==f.id)selFloor(f.id)});
+  side.appendChild(b);
+});
+
+/* ---------- recorrido 360 ---------- */
+function ensureViewer(){
+  if(viewer)return true;
+  try{
+    viewer=new Marzipano.Viewer($("pano"),{controls:{mouseViewMode:"drag"}});
+    limiter=Marzipano.RectilinearView.limit.traditional(2576,rad(100));
+    geom=new Marzipano.EquirectGeometry([{width:2576}]);
+    return true;
+  }catch(e){$("err").style.display="grid";return false}
+}
+var arrow=null;
+function buildTour(tid){
+  var t=tours[tid];
+  if(t.built)return;
+  t.built=true;byS[tid]={};
+  t.scenes.forEach(function(s){
+    byS[tid][s.id]=s;
+    s.view=new Marzipano.RectilinearView({yaw:rad(s.yaw),pitch:0.04,fov:rad(80)},limiter);
+    s.scene=viewer.createScene({source:Marzipano.ImageUrlSource.fromString(IMGS[s.img]),geometry:geom,view:s.view,pinFirstLevel:true});
+    s.links.forEach(function(l){
+      var b=document.createElement("button");b.className="hs";b.type="button";
+      var dest=t.scenes.filter(function(x){return x.id===l.to})[0];
+      b.setAttribute("aria-label","Ir a "+dest.name);
+      b.innerHTML="<b>"+dest.name+"</b>";
+      b.addEventListener("click",function(){go(l.to,l.arrive)});
+      ["mousedown","touchstart","pointerdown","wheel"].forEach(function(ev){b.addEventListener(ev,function(e){e.stopPropagation()},{passive:true})});
+      s.scene.hotspotContainer().createHotspot(b,{yaw:rad(l.yaw),pitch:l.pitch==null?0.06:l.pitch});
+    });
+  });
+}
+function fillTour(tid){
+  var t=tours[tid];
+  dock.innerHTML="";
+  Array.prototype.forEach.call(mapEl.querySelectorAll(".pd"),function(n){n.remove()});
+  $("pimg").src=PLANS[t.plan];
+  $("tfloor").textContent=t.title;
+  t.scenes.forEach(function(s){
+    var d=document.createElement("button");d.type="button";d.dataset.id=s.id;
+    d.innerHTML='<img alt="" src="'+THUMBS[tid+"_"+s.id]+'"><span>'+s.name+"</span>";
+    d.addEventListener("click",function(){go(s.id)});
+    dock.appendChild(d);
+    var p=document.createElement("button");p.type="button";p.className="pd";p.dataset.id=s.id;
+    p.style.left=t.pos[s.id][0]+"%";p.style.top=t.pos[s.id][1]+"%";
+    p.tabIndex=-1;p.setAttribute("aria-label",s.name);
+    mapEl.appendChild(p);
+  });
+}
+function go(id,yaw){
+  var s=byS[curT][id];
+  s.view.setParameters({yaw:rad(yaw==null?s.yaw:yaw),pitch:0.04,fov:rad(80)});
+  s.scene.switchTo({transitionDuration:reduce?0:900});
+  nameEl.textContent=s.name;
+  var sel=function(n){n.setAttribute("aria-current",n.dataset.id===id?"true":"false")};
+  Array.prototype.forEach.call(dock.children,sel);
+  Array.prototype.forEach.call(mapEl.querySelectorAll(".pd"),sel);
+}
+function openTour(tid,sid){
+  layer("tour");
+  if(!ensureViewer()){layer("show");return}
+  viewer.updateSize();
+  if(curT!==tid){curT=tid;buildTour(tid);fillTour(tid)}
+  go(sid);
+  $("back").focus({preventScroll:true});
+}
+function closeTour(){
+  layer("show");
+}
+$("back").addEventListener("click",closeTour);
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&tourEl.style.display==="block")closeTour()});
+tg.addEventListener("click",function(){var off=planEl.classList.toggle("off");tg.setAttribute("aria-expanded",off?"false":"true")});
+$("pano").addEventListener("pointerdown",function(){hint.classList.add("off")},{once:true});
+/* ---------- vistas exteriores (aéreas y nivel observador) ---------- */
+var EXT=DATA.ext,ext=$("ext"),estage=$("estage"),eframe=$("eframe"),eimg=$("eimg"),ebg=$("ebg"),ebar=$("ebar"),eseg=$("eseg"),eprev=$("eprev"),enext=$("enext"),ecap=$("ecap");
+EXT.aereas.push(EXT.aereas.splice(1,1)[0]);
+var eSet="aereas",eIdx=0,lastAer=0,mode={},eTok=0;
+function portrait(){return window.matchMedia("(orientation:portrait)").matches}
+function layer(n){
+  intro.style.display=n==="intro"?"block":"none";
+  ext.style.display=n==="ext"?"block":"none";
+  show.style.display=n==="show"?"block":"none";
+  tourEl.style.display=n==="tour"?"block":"none";
+  if(n==="show"&&portrait())stage.scrollLeft=frame.offsetWidth*0.62-stage.clientWidth/2;
+  if(n==="intro"&&portrait())istage.scrollLeft=(iframe.offsetWidth-istage.clientWidth)/2;
+  if(n==="ext"&&portrait())estage.scrollLeft=(eframe.offsetWidth-estage.clientWidth)/2;
+}
+function chev(d){return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(d<0?"M15 5l-7 7 7 7":"M9 5l7 7-7 7")+'"/></svg>'}
+function eRender(){
+  var list=EXT[eSet],v=list[eIdx],n=list.length,aer=eSet==="aereas";
+  var m=v.night&&mode[eSet+eIdx]==="night"?"night":"day",src=m==="night"?v.night:v.day,tok=++eTok;
+  eframe.classList.add("fade");
+  var im=new Image();
+  var done=function(){setTimeout(function(){
+    if(tok!==eTok)return;
+    eimg.src=src;eimg.alt=(aer?"Vista aérea: ":"Vista a nivel observador: ")+v.name;
+    ebg.style.backgroundImage='url("'+src+'")';
+    eframe.classList.remove("fade");
+    if(portrait())estage.scrollLeft=(eframe.offsetWidth-estage.clientWidth)/2;
+  },reduce?0:180)};
+  im.onload=done;im.onerror=done;im.src=src;
+  var pi=aer?(eIdx+n-1)%n:eIdx-1,ni=aer?(eIdx+1)%n:eIdx+1;
+  eprev.hidden=pi<0;enext.hidden=ni>=n;
+  eprev.dataset.i=pi;enext.dataset.i=ni;
+  var pn=list[pi]?list[pi].name:"",nn=list[ni]?list[ni].name:"";
+  eprev.innerHTML=chev(-1)+"<b>"+(aer?"Rotar":pn)+"</b>";
+  enext.innerHTML=chev(1)+"<b>"+(aer?"Rotar":nn)+"</b>";
+  eprev.setAttribute("aria-label",aer?"Rotar a la vista anterior":"Ir a "+pn);
+  enext.setAttribute("aria-label",aer?"Rotar a la vista siguiente":"Ir a "+nn);
+  eseg.hidden=!v.night;
+  Array.prototype.forEach.call(eseg.children,function(b){b.setAttribute("aria-pressed",b.dataset.m===m?"true":"false")});
+  ecap.innerHTML="<small>"+(aer?"Vista aérea":"A nivel observador")+"</small><h1>"+v.name+"</h1><div class=\"dots\">"+list.map(function(x,i){return '<button type="button" data-i="'+i+'" aria-label="'+x.name+'" aria-current="'+(i===eIdx?"true":"false")+'"></button>'}).join("")+"</div>";
+  [pi,ni].forEach(function(i){if(list[i]){var p=new Image();p.src=list[i].day}});
+}
+function eGo(i){eIdx=+i;if(eSet==="aereas")lastAer=eIdx;eRender()}
+function eBar(){
+  ebar.innerHTML="";
+  var add=function(t,fn){var b=document.createElement("button");b.type="button";b.className="fb";b.textContent=t;b.addEventListener("click",fn);ebar.appendChild(b)};
+  if(eSet==="aereas"){
+    add("Ver plantas",function(){layer("show")});
+    add("Nivel observador",function(){eSet="obs";eIdx=EXT.obsStart;eBar();eRender()});
+  }else{
+    add("← Vistas aéreas",function(){eSet="aereas";eIdx=lastAer;eBar();eRender()});
+  }
+}
+eprev.addEventListener("click",function(){eGo(eprev.dataset.i)});
+enext.addEventListener("click",function(){eGo(enext.dataset.i)});
+ecap.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("button[data-i]");if(b)eGo(b.dataset.i)});
+eseg.addEventListener("click",function(e){var b=e.target.closest("button[data-m]");if(!b)return;mode[eSet+eIdx]=b.dataset.m;eRender()});
+document.addEventListener("keydown",function(e){
+  if(ext.style.display!=="block")return;
+  if(e.key==="ArrowLeft"&&!eprev.hidden)eGo(eprev.dataset.i);
+  if(e.key==="ArrowRight"&&!enext.hidden)eGo(enext.dataset.i);
+});
+var bb=document.createElement("button");bb.type="button";bb.className="fb";bb.textContent="← Vistas aéreas";
+bb.addEventListener("click",function(){layer("ext")});
+side.insertBefore(bb,side.firstChild);
+selFloor(floors[0].id,true);
+/* ---------- intro: portada, video y edificio ---------- */
+var INTRO={cover:"assets/1_RENDER_AEREO_CIELO.jpg",far:"assets/2_RENDER_AEREO_LEJOS.jpg",shade:"assets/2_RENDER_AEREO_LEJOS_sombreado.jpg",video:"assets/transicion.mp4"};
+var intro=$("intro"),istage=$("istage"),iframe=$("iframe"),ibg=$("ibg"),i1=$("i1"),i2=$("i2"),i3=$("i3"),ivid=$("ivid"),igo=$("igo"),ihot=$("ihot");
+function introInit(){
+  i1.src=INTRO.cover;
+  ibg.style.backgroundImage='url("'+INTRO.cover+'")';
+  ivid.muted=true;
+  var warm=function(){i2.src=INTRO.far;i3.src=INTRO.shade;ivid.src=INTRO.video;ivid.load()};
+  if(i1.complete&&i1.naturalWidth)warm();else{i1.addEventListener("load",warm,{once:true});i1.addEventListener("error",warm,{once:true})}
+}
+function introEnd(){
+  i2.style.opacity=1;
+  ibg.style.backgroundImage='url("'+INTRO.far+'")';
+  ivid.style.opacity=0;
+  try{ivid.pause()}catch(e){}
+  i3.classList.add("on");
+  ihot.hidden=false;
+}
+igo.addEventListener("click",function(){
+  igo.classList.add("off");
+  eRender();
+  var done=false,finish=function(){if(done)return;done=true;introEnd()};
+  ivid.addEventListener("ended",finish,{once:true});
+  ivid.addEventListener("error",finish,{once:true});
+  ivid.style.opacity=1;
+  var p=ivid.play();
+  if(p&&p.catch)p.catch(finish);
+  setTimeout(finish,8000);
+});
+ihot.addEventListener("click",function(){layer("ext")});
+eBar();introInit();layer("intro");
+})();
+</script>
+</body>
+</html>
